@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import axios from 'axios';
+import './JmxForm.css'; // Import the CSS file for styling
 
 const FileUploadForm = () => {
     const [projectName, setProjectName] = useState('');
@@ -11,13 +12,13 @@ const FileUploadForm = () => {
     const [duration, setDuration] = useState('');
     const [iterations, setIterations] = useState('');
     const [message, setMessage] = useState('');
+    const [fileUploaded, setFileUploaded] = useState(false);
 
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate input: Ensure either duration or iterations is filled
         if (!duration && !iterations) {
             setMessage('Please provide either Duration or Number of Iterations.');
             return;
@@ -33,17 +34,18 @@ const FileUploadForm = () => {
         if (iterations) formData.append('iterations', iterations);
 
         try {
-            const token = localStorage.getItem('token'); // Get the token from localStorage
-            const response = await axios.post('http://localhost:8080/api/uploadJmx', formData, {
+            const token = localStorage.getItem('token');
+            const response = await axios.post('http://localhost:8080/api/uploadAndRunJmx', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}` // Include the token in the headers
+                    'Authorization': `Bearer ${token}`
                 },
                 withCredentials: true,
             });
 
             if (response.status === 200) {
                 setMessage('Files uploaded successfully!');
+                setFileUploaded(true);
             } else {
                 setMessage('Failed to upload files.');
             }
@@ -58,15 +60,14 @@ const FileUploadForm = () => {
             const response = await axios.post('http://localhost:8080/auth/api/logout', {}, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                withCredentials: true // Ensure cookies are sent with the request for session-based authentication
+                withCredentials: true
             });
 
             if (response.status === 200) {
-                // Clear the JWT token from localStorage
                 localStorage.removeItem('token');
-                navigate('/'); // Redirect to login page after successful logout
+                navigate('/');
             } else {
                 alert('Logout failed. Please try again.');
             }
@@ -77,76 +78,78 @@ const FileUploadForm = () => {
     };
 
     return (
-        <div>
-            <h2>Upload Files</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Project Name:</label>
-                    <input
-                        type="text"
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>JMX File:</label>
-                    <input
-                        type="file"
-                        accept=".jmx"
-                        onChange={(e) => setJmxFile(e.target.files[0])}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>CSV File:</label>
-                    <input
-                        type="file"
-                        accept=".csv"
-                        onChange={(e) => setCsvFile(e.target.files[0])}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Total Users:</label>
-                    <input
-                        type="number"
-                        value={totalUsers}
-                        onChange={(e) => setTotalUsers(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Ramp Up Time (seconds):</label>
-                    <input
-                        type="number"
-                        value={rampUpTime}
-                        onChange={(e) => setRampUpTime(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Duration (minutes):</label>
-                    <input
-                        type="number"
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        disabled={iterations !== ''} // Disable if iterations is filled
-                    />
-                </div>
-                <div>
-                    <label>Number of Iterations:</label>
-                    <input
-                        type="number"
-                        value={iterations}
-                        onChange={(e) => setIterations(e.target.value)}
-                        disabled={duration !== ''} // Disable if duration is filled
-                    />
-                </div>
-                <button type="submit">Upload</button>
-                <button type="button" onClick={handleLogout}>Logout</button>
-            </form>
-            {message && <p>{message}</p>}
+        <div className="file-upload-container">
+            <div className="file-upload-card">
+                <h2>Upload Files</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Project Name:</label>
+                        <input
+                            type="text"
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>JMX File:</label>
+                        <input
+                            type="file"
+                            accept=".jmx"
+                            onChange={(e) => setJmxFile(e.target.files[0])}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>CSV File:</label>
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={(e) => setCsvFile(e.target.files[0])}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Total Users:</label>
+                        <input
+                            type="number"
+                            value={totalUsers}
+                            onChange={(e) => setTotalUsers(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Ramp Up Time (seconds):</label>
+                        <input
+                            type="number"
+                            value={rampUpTime}
+                            onChange={(e) => setRampUpTime(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Duration (minutes):</label>
+                        <input
+                            type="number"
+                            value={duration}
+                            onChange={(e) => setDuration(e.target.value)}
+                            disabled={iterations !== ''}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Number of Iterations:</label>
+                        <input
+                            type="number"
+                            value={iterations}
+                            onChange={(e) => setIterations(e.target.value)}
+                            disabled={duration !== ''}
+                        />
+                    </div>
+                    <button type="submit" className="btn primary-btn">Upload</button>
+                    <button type="button" className="btn secondary-btn" onClick={handleLogout}>Logout</button>
+                </form>
+                {message && <p className="message">{message}</p>}
+            </div>
         </div>
     );
 };

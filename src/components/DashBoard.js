@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './DashBoard.css'; // Import the CSS file for styling
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -10,15 +11,14 @@ const Dashboard = () => {
             const response = await axios.post('http://localhost:8080/auth/api/logout', {}, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                withCredentials: true // Ensure cookies are sent with the request for session-based authentication
+                withCredentials: true
             });
 
             if (response.status === 200) {
-                // Clear the JWT token from localStorage
                 localStorage.removeItem('token');
-                navigate('/'); // Redirect to login page after successful logout
+                navigate('/');
             } else {
                 alert('Logout failed. Please try again.');
             }
@@ -28,16 +28,25 @@ const Dashboard = () => {
         }
     };
 
-    const openJmxPage = () => 
-        { const token = localStorage.getItem('token');
-          navigate('/JmxForm', { state: { headers: { 'Authorization': `Bearer ${token}` } } }); };
+    const openJmxPage = () => {
+        const token = localStorage.getItem('token');
+        navigate('/JmxForm', { state: { headers: { 'Authorization': `Bearer ${token}` } } });
+    };
 
     return (
-        <div>
-            <h1>Dashboard</h1>
-            <p>Welcome to the secured dashboard!</p>
-            <button onClick={openJmxPage}>Add Jmx file and Csv file</button>
-            <button onClick={handleLogout}>Logout</button>
+        <div className="dashboard-container">
+            <div className="dashboard-header">
+                <h1>Welcome to Your Dashboard</h1>
+                <p>Your gateway to managing files and actions!</p>
+            </div>
+            <div className="dashboard-buttons">
+                <button className="btn primary-btn" onClick={openJmxPage}>
+                    Add JMX and CSV Files
+                </button>
+                <button className="btn secondary-btn" onClick={handleLogout}>
+                    Logout
+                </button>
+            </div>
         </div>
     );
 };

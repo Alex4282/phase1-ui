@@ -1,0 +1,150 @@
+/* Full-page gradient background with a soft blur effect */
+.file-upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    height: auto;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    font-family: 'Roboto', sans-serif;
+    overflow-y: auto; /* Enable scrolling for the content */
+}
+
+/* Stylish card with soft shadow and gradient border */
+.file-upload-card {
+    background: #ffffff;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    width: 450px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    min-height: 500px; /* Ensuring full visibility */
+}
+
+.file-upload-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    margin: -2px; /* Same as border width */
+    border-radius: 15px;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+/* Elegant title styling */
+.file-upload-card h2 {
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* Responsive form groups with modern spacing */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34495e;
+    font-weight: 600;
+}
+
+/* Input fields with stylish focus effects */
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #2575fc;
+    box-shadow: 0 0 5px rgba(37, 117, 252, 0.4);
+    outline: none;
+}
+
+/* Buttons with gradient backgrounds and hover animations */
+.btn {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 117, 252, 0.5);
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #f44336, #e57373);
+}
+
+.secondary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(244, 67, 54, 0.5);
+}
+
+/* Stylish message area */
+.message {
+    margin-top: 20px;
+    font-size: 15px;
+    color: #16a085;
+    background: #e8f8f5;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #16a085;
+}
+
+/* File input style with hover */
+.form-group input[type="file"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button {
+    background: #6a11cb;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    background: #2575fc;
+}
+
+/* Adjust form card responsiveness for mobile */
+@media (max-width: 500px) {
+    .file-upload-card {
+        width: 90%;
+        padding: 30px;
+    }
+}
