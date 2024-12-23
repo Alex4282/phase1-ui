@@ -35,7 +35,7 @@ const FileUploadForm = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8080/api/uploadAndRunJmx', formData, {
+            const response = await axios.post('http://localhost:8080/api/uploadAndSaveJmx', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -79,6 +79,17 @@ const FileUploadForm = () => {
 
     return (
         <div className="file-upload-container">
+            {/* Top buttons */}
+            <div className="top-buttons">
+                <button type="button" className="dashboard-button" onClick={() => navigate('/dashboard')}>
+                    Go to Dashboard
+                </button>
+                <button type="button" className="logout-button" onClick={handleLogout}>
+                    Logout
+                </button>
+            </div>
+
+            {/* File upload card */}
             <div className="file-upload-card">
                 <h2>Upload Files</h2>
                 <form onSubmit={handleSubmit}>
@@ -146,7 +157,6 @@ const FileUploadForm = () => {
                         />
                     </div>
                     <button type="submit" className="btn primary-btn">Upload</button>
-                    <button type="button" className="btn secondary-btn" onClick={handleLogout}>Logout</button>
                 </form>
                 {message && <p className="message">{message}</p>}
             </div>

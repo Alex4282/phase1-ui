@@ -4,8 +4,8 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/DashBoard';
 import PrivateRoute from './components/PrivateRoute';
-import JmxForm from './components/JmxForm';
 import FileUploadForm from './components/JmxForm';
+import Results from './components/Results';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,7 +28,7 @@ const App = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={<PrivateRoute element={Dashboard} isAuthenticated={isAuthenticated} />} />
                 <Route path="/jmxform" element={<PrivateRoute element={FileUploadForm} isAuthenticated={isAuthenticated} />} />
-                
+                <Route path="/results" element={<PrivateRoute element={Results} isAuthenticated={isAuthenticated} />} />
             </Routes>
         </Router>
     );

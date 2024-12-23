@@ -22,7 +22,7 @@ const Login = ({onLogin}) => {
             });
     
             if (response.status === 200) {
-                alert('Login successful!');
+                // alert('Login successful!');
                 const token = response.data.accessToken; 
                 console.log(token);
                 localStorage.setItem('token', token); // Store token for future requests

@@ -33,6 +33,10 @@ const Dashboard = () => {
         navigate('/JmxForm', { state: { headers: { 'Authorization': `Bearer ${token}` } } });
     };
 
+    const viewResultsPage = () => {
+        const token = localStorage.getItem('token');
+        navigate('/results', { state: { headers: { 'Authorization': `Bearer ${token}` } } });
+    };
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
@@ -42,6 +46,9 @@ const Dashboard = () => {
             <div className="dashboard-buttons">
                 <button className="btn primary-btn" onClick={openJmxPage}>
                     Add JMX and CSV Files
+                </button>
+                <button className="btn secondary-btn" onClick={viewResultsPage}>
+                    View Results
                 </button>
                 <button className="btn secondary-btn" onClick={handleLogout}>
                     Logout
