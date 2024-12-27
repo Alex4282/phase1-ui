@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import './DashBoard.css'; // Import the CSS file for styling
 
 const Dashboard = () => {
@@ -8,7 +8,7 @@ const Dashboard = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/auth/api/logout', {}, {
+            const response = await axiosInstance.post('/api/auth/logout', {}, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

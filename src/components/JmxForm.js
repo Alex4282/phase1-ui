@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import './JmxForm.css'; // Import the CSS file for styling
 
 const FileUploadForm = () => {
@@ -35,7 +35,7 @@ const FileUploadForm = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8080/api/uploadAndSaveJmx', formData, {
+            const response = await axiosInstance.post('/api/uploadAndSaveJmx', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -57,7 +57,7 @@ const FileUploadForm = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/auth/api/logout', {}, {
+            const response = await axiosInstance.post('/auth/api/logout', {}, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

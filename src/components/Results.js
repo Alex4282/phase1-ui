@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import './Results.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ const Results = () => {
             setLoading(true);
             setError(null); // Reset error before fetch
             try {
-                const response = await axios.get('http://localhost:8080/api/files', {
+                const response = await axiosInstance.get('/api/files', {
                     params: { path: currentPath },
                 });
                 setFiles(response.data);
@@ -40,7 +40,7 @@ const Results = () => {
 
     const downloadAsZip = async (folderName) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/download', {
+            const response = await axiosInstance.get('/api/download', {
                 params: { path: `${currentPath}/${folderName}` },
                 responseType: 'blob',
             });
@@ -81,7 +81,7 @@ const Results = () => {
     
     const handleLogout = async () => {
             try {
-                const response = await axios.post('http://localhost:8080/auth/api/logout', {}, {
+                const response = await axiosInstance.post('/auth/api/logout', {}, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`

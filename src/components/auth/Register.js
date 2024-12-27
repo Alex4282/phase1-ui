@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Register.css'; // Import the CSS file
+import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../axiosInstance';
-import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -14,7 +14,9 @@ const Register = () => {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-    const navigate= useNavigate();
+
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -22,7 +24,7 @@ const Register = () => {
             console.log(formData.email);
             console.log(formData.password);
             
-            const response = await axios.post('http://localhost:8080/api/auth/register', formData);
+            const response = await axiosInstance.post('/api/auth/register', formData);
             alert('Registration successful');
             navigate('/');
         } catch (err) {
@@ -58,6 +60,12 @@ const Register = () => {
                 <button type="submit" className="register-button">
                     Register
                 </button>
+                <p>
+                    Already have an account?{' '}
+                    <Link to="/" className="back-to-login-link">
+                        Back to Login
+                    </Link>
+                </p>
             </form>
         </div>
     );

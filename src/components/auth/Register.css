@@ -58,3 +58,12 @@
 .register-button:hover {
     background: #16a085;
 }
+
+.back-to-login-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.back-to-login-link:hover {
+    text-decoration: underline;
+}
