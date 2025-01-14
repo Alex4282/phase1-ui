@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosInstance';
 import './Results.css';
 import { useNavigate } from 'react-router-dom';
+import { UPLOAD_DIRECTORY } from './Constants';
 
 const Results = () => {
-    const [files, setFiles] = useState([]);
-    const [currentPath, setCurrentPath] = useState('D:/phase1/src/main/uploads'); // Initial directory
+    const [files, setFiles] = useState([]); // Ensure it starts as an array
+    const [currentPath, setCurrentPath] = useState(UPLOAD_DIRECTORY); // Initial directory
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchFiles = async () => {
@@ -17,10 +20,17 @@ const Results = () => {
                 const response = await axiosInstance.get('/api/files', {
                     params: { path: currentPath },
                 });
-                setFiles(response.data);
+                // Validate the response to ensure it's an array
+                if (Array.isArray(response.data)) {
+                    setFiles(response.data);
+                } else {
+                    console.error('Unexpected response format:', response.data);
+                    setFiles([]); // Fallback to an empty array
+                }
             } catch (error) {
                 console.error('Error fetching file data:', error);
                 setError('Failed to load files. Please try again.');
+                setFiles([]); // Ensure files is always an array
             } finally {
                 setLoading(false);
             }
@@ -59,6 +69,10 @@ const Results = () => {
     };
 
     const renderFiles = (fileStructure) => {
+        if (!Array.isArray(fileStructure) || fileStructure.length === 0) {
+            return <p>No files or folders available.</p>;
+        }
+
         return fileStructure.map((file, index) => (
             <div key={index} className="file-item">
                 {file.isDirectory ? (
@@ -76,30 +90,33 @@ const Results = () => {
             </div>
         ));
     };
-    
-    const navigate = useNavigate();
-    
+
     const handleLogout = async () => {
-            try {
-                const response = await axiosInstance.post('/auth/api/logout', {}, {
+        try {
+            const response = await axiosInstance.post(
+                '/auth/api/logout',
+                {},
+                {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
-                    withCredentials: true
-                });
-    
-                if (response.status === 200) {
-                    localStorage.removeItem('token');
-                    navigate('/');
-                } else {
-                    alert('Logout failed. Please try again.');
+                    withCredentials: true,
                 }
-            } catch (error) {
-                console.error('An error occurred during logout:', error);
-                alert('An error occurred during logout.');
+            );
+
+            if (response.status === 200) {
+                localStorage.removeItem('token');
+                navigate('/');
+            } else {
+                alert('Logout failed. Please try again.');
             }
-        };
+        } catch (error) {
+            console.error('An error occurred during logout:', error);
+            alert('An error occurred during logout.');
+        }
+    };
+
     return (
         <div className="file-display-container">
             <div className="top-buttons">
@@ -123,7 +140,7 @@ const Results = () => {
                 <p>Loading...</p>
             ) : (
                 <div className="file-structure">{renderFiles(files)}</div>
-            )} 
+            )}
         </div>
     );
 };

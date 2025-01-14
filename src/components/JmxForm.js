@@ -6,15 +6,22 @@ import './JmxForm.css'; // Import the CSS file for styling
 const FileUploadForm = () => {
     const [projectName, setProjectName] = useState('');
     const [jmxFile, setJmxFile] = useState(null);
-    const [csvFile, setCsvFile] = useState(null);
+    const [csvFiles, setCsvFiles] = useState([]);
     const [totalUsers, setTotalUsers] = useState('');
     const [rampUpTime, setRampUpTime] = useState('');
     const [duration, setDuration] = useState('');
     const [iterations, setIterations] = useState('');
+    const [numAwsMachines, setNumAwsMachines] = useState('');
     const [message, setMessage] = useState('');
     const [fileUploaded, setFileUploaded] = useState(false);
 
     const navigate = useNavigate();
+
+    const handleCsvFilesChange = (e) => {
+        const newFiles = Array.from(e.target.files);
+        setCsvFiles((prevFiles) => [...prevFiles, ...newFiles]);
+        e.target.value = ''; // Clear the input to allow adding the same file again
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,13 +30,20 @@ const FileUploadForm = () => {
             setMessage('Please provide either Duration or Number of Iterations.');
             return;
         }
-
+        if (!jmxFile || csvFiles.length === 0) {
+            setMessage('Please upload a JMX file and at least one CSV file.');
+            return;
+        }
+        
         const formData = new FormData();
         formData.append('projectName', projectName);
         formData.append('jmxFile', jmxFile);
-        formData.append('csvFile', csvFile);
+        csvFiles.forEach((file) => {
+            formData.append('csvFiles', file);
+        });
         formData.append('totalUsers', totalUsers);
         formData.append('rampUpTime', rampUpTime);
+        formData.append('numAwsMachines', numAwsMachines);
         if (duration) formData.append('duration', duration);
         if (iterations) formData.append('iterations', iterations);
 
@@ -38,7 +52,7 @@ const FileUploadForm = () => {
             const response = await axiosInstance.post('/api/uploadAndSaveJmx', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
                 withCredentials: true,
             });
@@ -60,9 +74,9 @@ const FileUploadForm = () => {
             const response = await axiosInstance.post('/auth/api/logout', {}, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                withCredentials: true
+                withCredentials: true,
             });
 
             if (response.status === 200) {
@@ -112,14 +126,39 @@ const FileUploadForm = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label>CSV File:</label>
+                        <label>CSV Files:</label>
                         <input
                             type="file"
                             accept=".csv"
-                            onChange={(e) => setCsvFile(e.target.files[0])}
-                            required
+                            multiple
+                            onChange={handleCsvFilesChange}
                         />
+                        <div className="csv-file-list">
+                            {csvFiles.length > 0 ? (
+                                <ul>
+                                    {csvFiles.map((file, index) => (
+                                        <li key={index}>
+                                            {file.name}
+                                            <button
+                                                type="button"
+                                                className="remove-button"
+                                                onClick={() => {
+                                                    setCsvFiles((prevFiles) =>
+                                                        prevFiles.filter((_, i) => i !== index)
+                                                    );
+                                                }}
+                                            >
+                                                Remove
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>No CSV files added yet.</p>
+                            )}
+                        </div>
                     </div>
+
                     <div className="form-group">
                         <label>Total Users:</label>
                         <input
@@ -135,6 +174,15 @@ const FileUploadForm = () => {
                             type="number"
                             value={rampUpTime}
                             onChange={(e) => setRampUpTime(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Number of AWS Machines:</label>
+                        <input
+                            type="number"
+                            value={numAwsMachines}
+                            onChange={(e) => setNumAwsMachines(e.target.value)}
                             required
                         />
                     </div>
