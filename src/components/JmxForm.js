@@ -16,11 +16,11 @@ const FileUploadForm = () => {
     const [fileUploaded, setFileUploaded] = useState(false);
 
     const navigate = useNavigate();
-
+    // reviewed
     const handleCsvFilesChange = (e) => {
         const newFiles = Array.from(e.target.files);
         setCsvFiles((prevFiles) => [...prevFiles, ...newFiles]);
-        e.target.value = ''; // Clear the input to allow adding the same file again
+        e.target.value = ''; 
     };
 
     const handleSubmit = async (e) => {
@@ -60,7 +60,7 @@ const FileUploadForm = () => {
             if (response.status === 200) {
                 setMessage('Files uploaded successfully!');
                 setFileUploaded(true);
-                navigate('/results'); // Navigate to the results page
+                navigate('/results'); 
             } else {
                 setMessage('Failed to upload files.');
             }
@@ -93,9 +93,17 @@ const FileUploadForm = () => {
         }
     };
 
+    const preventScroll = (e) => e.preventDefault();
+    const addEventListeners = (element) => 
+        { if (element) { 
+            element.addEventListener('focus', (e) => e.target.addEventListener('wheel', preventScroll));
+            element.addEventListener('blur', (e) => e.target.removeEventListener('wheel', preventScroll)); 
+            } 
+        };
+
     return (
         <div className="file-upload-container">
-            {/* Top buttons */}
+           
             <div className="top-buttons">
                 <button type="button" className="dashboard-button" onClick={() => navigate('/dashboard')}>
                     Go to Dashboard
@@ -167,6 +175,7 @@ const FileUploadForm = () => {
                             type="number"
                             value={totalUsers}
                             onChange={(e) => setTotalUsers(e.target.value)}
+                            ref={addEventListeners}
                             required
                         />
                     </div>
@@ -176,6 +185,7 @@ const FileUploadForm = () => {
                             type="number"
                             value={rampUpTime}
                             onChange={(e) => setRampUpTime(e.target.value)}
+                            ref={addEventListeners}
                             required
                         />
                     </div>
@@ -185,6 +195,7 @@ const FileUploadForm = () => {
                             type="number"
                             value={numAwsMachines}
                             onChange={(e) => setNumAwsMachines(e.target.value)}
+                            ref={addEventListeners}
                             required
                         />
                     </div>
@@ -194,6 +205,7 @@ const FileUploadForm = () => {
                             type="number"
                             value={duration}
                             onChange={(e) => setDuration(e.target.value)}
+                            ref={addEventListeners}
                             disabled={iterations !== ''}
                         />
                     </div>
@@ -203,6 +215,7 @@ const FileUploadForm = () => {
                             type="number"
                             value={iterations}
                             onChange={(e) => setIterations(e.target.value)}
+                            ref={addEventListeners}
                             disabled={duration !== ''}
                         />
                     </div>
