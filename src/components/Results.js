@@ -45,7 +45,7 @@ const Results = () => {
 
     const navigateUp = () => {
         const parentPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-        setCurrentPath(parentPath || 'D:/phase1/src/main/uploads');
+        setCurrentPath(parentPath || UPLOAD_DIRECTORY);
     };
 
     const downloadAsZip = async (folderName) => {
@@ -94,7 +94,7 @@ const Results = () => {
     const handleLogout = async () => {
         try {
             const response = await axiosInstance.post(
-                '/auth/api/logout',
+                '/api/auth/logout',
                 {},
                 {
                     headers: {

@@ -25,13 +25,13 @@ const FileUploadForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (!duration && !iterations) {
             setMessage('Please provide either Duration or Number of Iterations.');
             return;
         }
-        if (!jmxFile || csvFiles.length === 0) {
-            setMessage('Please upload a JMX file and at least one CSV file.');
+        if (!jmxFile ) {
+            setMessage('Please upload a JMX file');
             return;
         }
         
@@ -46,7 +46,7 @@ const FileUploadForm = () => {
         formData.append('numAwsMachines', numAwsMachines);
         if (duration) formData.append('duration', duration);
         if (iterations) formData.append('iterations', iterations);
-
+    
         try {
             const token = localStorage.getItem('token');
             const response = await axiosInstance.post('/api/uploadAndSaveJmx', formData, {
@@ -56,10 +56,11 @@ const FileUploadForm = () => {
                 },
                 withCredentials: true,
             });
-
+    
             if (response.status === 200) {
                 setMessage('Files uploaded successfully!');
                 setFileUploaded(true);
+                navigate('/results'); // Navigate to the results page
             } else {
                 setMessage('Failed to upload files.');
             }
@@ -68,10 +69,11 @@ const FileUploadForm = () => {
             setMessage('Failed to upload files.');
         }
     };
+    
 
     const handleLogout = async () => {
         try {
-            const response = await axiosInstance.post('/auth/api/logout', {}, {
+            const response = await axiosInstance.post('/api/auth/logout', {}, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
