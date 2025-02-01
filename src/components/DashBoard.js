@@ -5,7 +5,8 @@ import './DashBoard.css'; // Import the CSS file for styling
 
 const Dashboard = () => {
     const navigate = useNavigate();
-
+    
+    // reviewed
     const handleLogout = async () => {
         try {
             const response = await axiosInstance.post('/api/auth/logout', {}, {
@@ -27,16 +28,23 @@ const Dashboard = () => {
             alert('An error occurred during logout.');
         }
     };
-
+    // reviewed
     const openJmxPage = () => {
         const token = localStorage.getItem('token');
-        navigate('/JmxForm', { state: { headers: { 'Authorization': `Bearer ${token}` } } });
+        navigate('/JmxForm', { state: { headers: { 'Authorization': `Bearer ${token}` },withCredentials:true } });
     };
 
+    // reviewed
     const viewResultsPage = () => {
         const token = localStorage.getItem('token');
-        navigate('/results', { state: { headers: { 'Authorization': `Bearer ${token}` } } });
+        navigate('/results', { state: { headers: { 'Authorization': `Bearer ${token}` },withCredentials:true  } });
     };
+
+    const viewManageDatabasePage = () => {
+        const token = localStorage.getItem('token');
+        navigate('/manageDatabase', { state: { headers: { 'Authorization': `Bearer ${token}` } ,withCredentials:true } });
+    };
+    // reviewed
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
@@ -49,6 +57,9 @@ const Dashboard = () => {
                 </button>
                 <button className="btn secondary-btn" onClick={viewResultsPage}>
                     View Results
+                </button>
+                <button className="btn secondary-btn" onClick={viewManageDatabasePage}>
+                    Manage Database
                 </button>
                 <button className="btn secondary-btn" onClick={handleLogout}>
                     Logout

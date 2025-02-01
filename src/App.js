@@ -6,6 +6,7 @@ import Dashboard from './components/DashBoard';
 import PrivateRoute from './components/PrivateRoute';
 import FileUploadForm from './components/JmxForm';
 import Results from './components/Results';
+import DatabasePage from './components/ManageDatabase';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,6 +30,8 @@ const App = () => {
                 <Route path="/dashboard" element={<PrivateRoute element={Dashboard} isAuthenticated={isAuthenticated} />} />
                 <Route path="/jmxform" element={<PrivateRoute element={FileUploadForm} isAuthenticated={isAuthenticated} />} />
                 <Route path="/results" element={<PrivateRoute element={Results} isAuthenticated={isAuthenticated} />} />
+                <Route path="/manageDatabase" element={<PrivateRoute element={DatabasePage} isAuthenticated={isAuthenticated} />} />
+
             </Routes>
         </Router>
     );
