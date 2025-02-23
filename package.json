@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ag-grid-community/client-side-row-model": "^32.3.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "ag-grid-react": "^33.1.0",
     "assert": "^2.1.0",
     "axios": "^1.7.8",
     "browserify-zlib": "^0.2.0",

@@ -60,8 +60,9 @@ const FileUploadForm = () => {
             if (response.status === 200) {
                 setMessage('Files uploaded successfully!');
                 setFileUploaded(true);
+                console.log(response.data.projectId);
                 setTimeout(() => {
-                    navigate('/results', { state: { headers: { 'Authorization': `Bearer ${token}` }, withCredentials: true } });
+                    navigate(`/jtl-data/${response.data.projectId}`, { state: { headers: { 'Authorization': `Bearer ${token}` }, withCredentials: true } });
                 }, 1000);
             } else {
                 setMessage('Failed to upload files.');

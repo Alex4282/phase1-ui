@@ -1,0 +1,70 @@
+Container styling
+.jtl-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+
+/* Position buttons at the top-right corner */
+.top-buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px; /* Space between the buttons */
+}
+
+/* Button styles for Go to Dashboard and Logout */
+.dashboard-button,
+.logout-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    z-index: 1000; /* Ensures it stays above other content */
+}
+
+.dashboard-button:hover {
+    background-color: #0056b3;
+}
+
+.logout-button {
+    background-color: #f44336;
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
+}
+
+.ag-filter-wrapper {
+    text-align: left; /* Align the filter elements to the left */
+}
+
+.ag-input-wrapper input {
+    padding-right: 0px; /* Remove space for the icon */
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+.ag-filter-icon {
+    display: none;
+  }
+  .ag-theme-alpine .ag-filter-icon {
+    display: none;
+  }
+.ag-input-wrapper::after {
+    content: ""; /* Remove the FontAwesome magnifying glass icon */
+    font-family: "Font Awesome 5 Free"; /* Use Font Awesome for icons */
+    font-weight: 900;
+    position: absolute;
+    right: 10px; /* Position the icon to the right */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #333;
+}
