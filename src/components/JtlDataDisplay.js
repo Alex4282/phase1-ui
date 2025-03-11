@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // Import useRef
 import { useNavigate } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -17,22 +17,23 @@ const JtlDataDisplay = ({ loadTestId }) => {
     const [error, setError] = useState(null);
     const [autoRefresh, setAutoRefresh] = useState(true);
     const navigate = useNavigate();
+    const gridRef = useRef(); // Create a reference to the grid
 
     const columnDefs = [
         { field: 'label', filter: true, sortable: true },
         { field: 'samples', filter: true, sortable: true },
         { field: 'fail', filter: true, sortable: true },
-        { field: 'errorPct', headerName: 'Error %', filter: true, sortable: true },
-        { field: 'average', filter: true, sortable: true },
-        { field: 'min', filter: true, sortable: true },
-        { field: 'max', filter: true, sortable: true },
-        { field: 'median', filter: true, sortable: true },
-        { field: 'ninetyTh', filter: true, sortable: true },
-        { field: 'ninetyFifth', filter: true, sortable: true },
-        { field: 'ninetyNinth', filter: true, sortable: true },
-        { field: 'transactionsPerSec', headerName: 'Transactions/s', filter: true, sortable: true },
-        { field: 'receivedKB', headerName: 'Received KB', filter: true, sortable: true },
-        { field: 'sentKB', headerName: 'Sent KB', filter: true, sortable: true }
+        { field: 'errorPct', headerName: 'Error %', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'average', headerName: 'Average Time ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'min',  headerName: 'Min Time ms',filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'max', headerName: 'Max Time ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'median', headerName: 'Median Time ms',filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'ninetyth', headerName: '90th pct ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'ninetyFifth', headerName: '95th pct ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'ninetyninth', headerName: '99th pct ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'transactionsPerSec', headerName: 'Transactions/s', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'receivedKB', headerName: 'Received KB', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'sentKB', headerName: 'Sent KB', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' }
     ];
 
     useEffect(() => {
@@ -55,6 +56,12 @@ const JtlDataDisplay = ({ loadTestId }) => {
                 const fetchedData = Array.isArray(response.data) ? response.data : [];
                 setRowData(fetchedData);
                 setRowCount(fetchedData.length);
+
+                // Resize columns to fit content after data is loaded
+                if (gridRef.current && gridRef.current.api) {
+                    gridRef.current.api.sizeColumnsToFit(); // Fit columns to the grid width
+                    gridRef.current.api.autoSizeAllColumns(); // Auto-size columns based on content
+                }
             } catch (error) {
                 setError("Error fetching data. Please try again later.");
             } finally {
@@ -108,11 +115,17 @@ const JtlDataDisplay = ({ loadTestId }) => {
             <p><strong>Total Rows:</strong> {rowCount}</p>
             <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
                 <AgGridReact
+                    ref={gridRef} // Attach the reference to the grid
                     rowData={rowData}
                     columnDefs={columnDefs}
                     pagination={true}
                     paginationPageSize={50}
                     theme={themeQuartz}
+                    onGridReady={(params) => {
+                        // Optional: Auto-size columns when the grid is ready
+                        params.api.sizeColumnsToFit();
+                        params.api.autoSizeAllColumns();
+                    }}
                 />
             </div>
         </div>

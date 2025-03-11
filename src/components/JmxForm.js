@@ -14,27 +14,29 @@ const FileUploadForm = () => {
     const [numAwsMachines, setNumAwsMachines] = useState('');
     const [message, setMessage] = useState('');
     const [fileUploaded, setFileUploaded] = useState(false);
+    const [validationStatus, setValidationStatus] = useState(null); // null: not validated, true: success, false: failure
+    const [isValidating, setIsValidating] = useState(false); // To show loading state during validation
 
     const navigate = useNavigate();
-    // reviewed
+
     const handleCsvFilesChange = (e) => {
         const newFiles = Array.from(e.target.files);
         setCsvFiles((prevFiles) => [...prevFiles, ...newFiles]);
-        e.target.value = ''; 
+        e.target.value = '';
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (!duration && !iterations) {
             setMessage('Please provide either Duration or Number of Iterations.');
             return;
         }
-        if (!jmxFile ) {
+        if (!jmxFile) {
             setMessage('Please upload a JMX file');
             return;
         }
-        
+
         const formData = new FormData();
         formData.append('projectName', projectName);
         formData.append('jmxFile', jmxFile);
@@ -46,7 +48,7 @@ const FileUploadForm = () => {
         formData.append('numAwsMachines', numAwsMachines);
         if (duration) formData.append('duration', duration);
         if (iterations) formData.append('iterations', iterations);
-    
+
         try {
             const token = localStorage.getItem('token');
             const response = await axiosInstance.post('/api/uploadAndSaveJmx', formData, {
@@ -56,7 +58,7 @@ const FileUploadForm = () => {
                 },
                 withCredentials: true,
             });
-    
+
             if (response.status === 200) {
                 setMessage('Files uploaded successfully!');
                 setFileUploaded(true);
@@ -72,7 +74,44 @@ const FileUploadForm = () => {
             setMessage('Failed to upload files.');
         }
     };
-    
+
+    const handleValidateJmx = async () => {
+        if (!jmxFile) {
+            setMessage('Please upload a JMX file first.');
+            return;
+        }
+
+        setIsValidating(true);
+        setValidationStatus(null); // Reset validation status
+
+        const formData = new FormData();
+        formData.append('jmxFile', jmxFile);
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axiosInstance.post('/api/validateJmx', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+
+            if (response.status === 200 && response.data.valid) {
+                setValidationStatus(true); // Validation successful
+                setMessage('JMX file is valid.');
+            } else {
+                setValidationStatus(false); // Validation failed
+                setMessage('JMX file is invalid.');
+            }
+        } catch (error) {
+            console.error('Error validating JMX file:', error);
+            setValidationStatus(false); // Validation failed
+            setMessage('Failed to validate JMX file.');
+        } finally {
+            setIsValidating(false);
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -97,16 +136,15 @@ const FileUploadForm = () => {
     };
 
     const preventScroll = (e) => e.preventDefault();
-    const addEventListeners = (element) => 
-        { if (element) { 
+    const addEventListeners = (element) => {
+        if (element) {
             element.addEventListener('focus', (e) => e.target.addEventListener('wheel', preventScroll));
-            element.addEventListener('blur', (e) => e.target.removeEventListener('wheel', preventScroll)); 
-            } 
-        };
+            element.addEventListener('blur', (e) => e.target.removeEventListener('wheel', preventScroll));
+        }
+    };
 
     return (
         <div className="file-upload-container">
-           
             <div className="top-buttons">
                 <button type="button" className="dashboard-button" onClick={() => navigate('/dashboard')}>
                     Go to Dashboard
@@ -137,6 +175,16 @@ const FileUploadForm = () => {
                             onChange={(e) => setJmxFile(e.target.files[0])}
                             required
                         />
+                        {jmxFile && (
+                            <button
+                                type="button"
+                                className={`validate-button ${validationStatus === true ? 'success' : validationStatus === false ? 'failure' : ''}`}
+                                onClick={handleValidateJmx}
+                                disabled={isValidating}
+                            >
+                                {isValidating ? 'Validating...' : validationStatus === true ? 'Validation Successful' : validationStatus === false ? 'Validation Unsuccessful' : 'Validate'}
+                            </button>
+                        )}
                     </div>
                     <div className="form-group">
                         <label>CSV Files:</label>
@@ -222,7 +270,13 @@ const FileUploadForm = () => {
                             disabled={duration !== ''}
                         />
                     </div>
-                    <button type="submit" className="btn primary-btn">Upload</button>
+                    <button
+                        type="submit"
+                        className="btn primary-btn"
+                        disabled={!validationStatus} // Disable submit button until validation is successful
+                    >
+                        Upload
+                    </button>
                 </form>
                 {message && <p className="message">{message}</p>}
             </div>
