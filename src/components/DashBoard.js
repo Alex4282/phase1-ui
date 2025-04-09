@@ -2,68 +2,69 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import './DashBoard.css'; // Import the CSS file for styling
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    
-    // reviewed
-    const handleLogout = async () => {
-        try {
-            const response = await axiosInstance.post('/api/auth/logout', {}, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                withCredentials: true
-            });
 
-            if (response.status === 200) {
-                localStorage.removeItem('token');
-                navigate('/');
-            } else {
-                alert('Logout failed. Please try again.');
-            }
-        } catch (error) {
-            console.error('An error occurred during logout:', error);
-            alert('An error occurred during logout.');
-        }
-    };
-    // reviewed
-    const openJmxPage = () => {
-        const token = localStorage.getItem('token');
-        navigate('/JmxForm', { state: { headers: { 'Authorization': `Bearer ${token}` },withCredentials:true } });
+    const handleNewProject = () => {
+        navigate('/jmxform');
     };
 
-    // reviewed
-    const viewResultsPage = () => {
-        const token = localStorage.getItem('token');
-        navigate('/results', { state: { headers: { 'Authorization': `Bearer ${token}` },withCredentials:true  } });
-    };
-
-    const viewManageDatabasePage = () => {
-        const token = localStorage.getItem('token');
-        navigate('/manageDatabase', { state: { headers: { 'Authorization': `Bearer ${token}` } ,withCredentials:true } });
-    };
-    // reviewed
     return (
         <div className="dashboard-container">
-            <div className="dashboard-header">
-                <h1>Welcome to Your Dashboard</h1>
-                <p>Your gateway to managing files and actions!</p>
+            {/* Welcome Section */}
+            <div className="welcome-section">
+                <h1>Welcome Jatin!</h1>
+                <p>Hi! We're happy to have you on board! Everything is set up for you to start testing.</p>
             </div>
-            <div className="dashboard-buttons">
-                <button className="btn primary-btn" onClick={openJmxPage}>
-                    Add JMX and CSV Files
-                </button>
-                <button className="btn secondary-btn" onClick={viewResultsPage}>
-                    View Results
-                </button>
-                <button className="btn secondary-btn" onClick={viewManageDatabasePage}>
-                    Manage Database
-                </button>
-                <button className="btn secondary-btn" onClick={handleLogout}>
-                    Logout
-                </button>
+
+            {/* Cards Section */}
+            <div className="cards-container">
+                {/* User Profile Card */}
+                <div className="card recent-runs">
+                    <h2>Your Recent Runs</h2>
+                    <ul className="run-links">
+                        <li><Link to="/final-report/70">Run #245 - April 3, 2023</Link></li>
+                        <li><Link to="/final-report/69">Run #244 - April 2, 2023</Link></li>
+                        <li><Link to="/final-report/68">Run #243 - April 1, 2023</Link></li>
+                        <li><Link to="/final-report/67">Run #242 - March 31, 2023</Link></li>
+                    </ul>
+                </div>
+
+                {/* Active Projects Card */}
+                <div className="card active-projects">
+                    <h2>Your Active Projects</h2>
+                    <ul className="project-list">
+                        <li className="project-item">
+                        <Link to="/project-dashboard" className="plain-link">
+                            <h3>Website Load Test</h3>
+                            <p>Status: In Progress</p>
+                        </Link>
+                        </li>
+                        <li className="project-item">
+                        <Link to="/project-dashboard" className="plain-link">
+                            <h3>API Stress Test</h3>
+                            <p>Status: Completed</p>
+                        </Link>
+                        </li>
+                        <li className="project-item">
+                        <Link to="/project-dashboard" className="plain-link">
+                            <h3>Backend Performance Test</h3>
+                            <p>Status: In Progress</p>
+                        </Link>
+                        </li>
+                    </ul>
+                </div>
+
+                {/* Start New Project Card */}
+                <div className="card start-project">
+                    <h2>Start a New Project</h2>
+                    <p>Upload your JMeter file to start a new test project.</p>
+                    <button className="new-project-button" onClick={handleNewProject}>
+                        Start New Project
+                    </button>
+                </div>
             </div>
         </div>
     );

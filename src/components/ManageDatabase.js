@@ -57,42 +57,9 @@ function DatabasePage() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await axiosInstance.post(
-        '/api/auth/logout',
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (response.status === 200) {
-        localStorage.removeItem('token');
-        navigate('/');
-      } else {
-        alert('Logout failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('An error occurred during logout:', error);
-      alert('An error occurred during logout.');
-    }
-  };
 
   return (
     <div className="database-page-container">
-      <div className="top-buttons">
-        <button type="button" className="dashboard-button" onClick={() => navigate('/dashboard')}>
-          Go to Dashboard
-        </button>
-        <button type="button" className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
       <div className="left-half">
         <button onClick={deleteAllActiveTests} className="delete-button">Delete All Active Tests</button>
       </div>

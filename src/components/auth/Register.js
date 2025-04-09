@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import './Register.css'; // Import the CSS file
-import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../axiosInstance';
+import { useNavigate, Link } from 'react-router-dom';
+import './Register.css'; // Use consistent CSS styling
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -20,15 +19,11 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            console.log(formData.username);
-            console.log(formData.email);
-            console.log(formData.password);
-            
             const response = await axiosInstance.post('/api/auth/register', formData);
             alert('Registration successful');
             navigate('/');
         } catch (err) {
-            alert('Registration failed');
+            alert('Registration failed. Please try again.');
         }
     };
 
@@ -60,9 +55,9 @@ const Register = () => {
                 <button type="submit" className="register-button">
                     Register
                 </button>
-                <p>
+                <p className="redirect-text">
                     Already have an account?{' '}
-                    <Link to="/" className="back-to-login-link">
+                    <Link to="/" className="redirect-link">
                         Back to Login
                     </Link>
                 </p>

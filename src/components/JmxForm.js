@@ -4,7 +4,8 @@ import axiosInstance from '../axiosInstance';
 import './JmxForm.css'; // Import the CSS file for styling
 
 const FileUploadForm = () => {
-    const [projectName, setProjectName] = useState('');
+    const [projectName, setProjectName] = useState('default_project');
+    const [performanceTestName, setPerformanceTestName] = useState('performance_test_1');
     const [jmxFile, setJmxFile] = useState(null);
     const [csvFiles, setCsvFiles] = useState([]);
     const [totalUsers, setTotalUsers] = useState('');
@@ -16,7 +17,7 @@ const FileUploadForm = () => {
     const [fileUploaded, setFileUploaded] = useState(false);
     const [validationStatus, setValidationStatus] = useState(null); // null: not validated, true: success, false: failure
     const [isValidating, setIsValidating] = useState(false); // To show loading state during validation
-
+    const [remarks, setRemarks] = useState('');
     const navigate = useNavigate();
 
     const handleCsvFilesChange = (e) => {
@@ -39,6 +40,7 @@ const FileUploadForm = () => {
 
         const formData = new FormData();
         formData.append('projectName', projectName);
+        formData.append('performanceTestName', performanceTestName);
         formData.append('jmxFile', jmxFile);
         csvFiles.forEach((file) => {
             formData.append('csvFiles', file);
@@ -48,6 +50,7 @@ const FileUploadForm = () => {
         formData.append('numAwsMachines', numAwsMachines);
         if (duration) formData.append('duration', duration);
         if (iterations) formData.append('iterations', iterations);
+        formData.append('remarks', remarks);
 
         try {
             const token = localStorage.getItem('token');
@@ -74,7 +77,14 @@ const FileUploadForm = () => {
             setMessage('Failed to upload files.');
         }
     };
-
+    const handleJmxFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setJmxFile(file);
+            e.target.value = ''; 
+        }
+    };
+    
     const handleValidateJmx = async () => {
         if (!jmxFile) {
             setMessage('Please upload a JMX file first.');
@@ -99,82 +109,82 @@ const FileUploadForm = () => {
 
             if (response.status === 200 && response.data.valid) {
                 setValidationStatus(true); // Validation successful
-                setMessage('JMX file is valid.');
+                
             } else {
                 setValidationStatus(false); // Validation failed
-                setMessage('JMX file is invalid.');
+                
             }
         } catch (error) {
             console.error('Error validating JMX file:', error);
             setValidationStatus(false); // Validation failed
-            setMessage('Failed to validate JMX file.');
+          
         } finally {
             setIsValidating(false);
         }
     };
-
-    const handleLogout = async () => {
-        try {
-            const response = await axiosInstance.post('/api/auth/logout', {}, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-                withCredentials: true,
-            });
-
-            if (response.status === 200) {
-                localStorage.removeItem('token');
-                navigate('/');
-            } else {
-                alert('Logout failed. Please try again.');
-            }
-        } catch (error) {
-            console.error('An error occurred during logout:', error);
-            alert('An error occurred during logout.');
-        }
-    };
-
-    const preventScroll = (e) => e.preventDefault();
-    const addEventListeners = (element) => {
-        if (element) {
-            element.addEventListener('focus', (e) => e.target.addEventListener('wheel', preventScroll));
-            element.addEventListener('blur', (e) => e.target.removeEventListener('wheel', preventScroll));
-        }
-    };
-
+    const [userCount,setUserCount] = useState(0);
     return (
         <div className="file-upload-container">
-            <div className="top-buttons">
-                <button type="button" className="dashboard-button" onClick={() => navigate('/dashboard')}>
-                    Go to Dashboard
-                </button>
-                <button type="button" className="logout-button" onClick={handleLogout}>
-                    Logout
-                </button>
-            </div>
-
-            {/* File upload card */}
-            <div className="file-upload-card">
-                <h2>Upload Files</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+            <div className="layout">
+                {/* Part 1: Project and Test Name */}
+                <div className="part1">
+                    <div className="editable-field">
                         <label>Project Name:</label>
                         <input
                             type="text"
                             value={projectName}
                             onChange={(e) => setProjectName(e.target.value)}
-                            required
                         />
                     </div>
-                    <div className="form-group">
-                        <label>JMX File:</label>
+                    <div className="editable-field">
+                        <label>Performance Test Name:</label>
                         <input
-                            type="file"
-                            accept=".jmx"
-                            onChange={(e) => setJmxFile(e.target.files[0])}
-                            required
+                            type="text"
+                            value={performanceTestName}
+                            onChange={(e) => setPerformanceTestName(e.target.value)}
                         />
+                    </div>
+                    <div className="editable-field">
+                        <label>Remarks</label>
+                        <input
+                            type="text"
+                            value={remarks}
+                            onChange={(e) => setRemarks(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {/* Part 2: File Upload and Load Configuration */}
+                <div className="part2">
+                    <div className="file-upload-section">
+                        <div className="upload-box" onClick={() => document.getElementById('jmx-upload').click()}>
+                            <span>+</span>
+                            <p>Upload JMX Script</p>
+                            <input
+                                id="jmx-upload"
+                                type="file"
+                                accept=".jmx"
+                                onChange={(e) => handleJmxFileChange(e)}
+                                style={{ display: 'none' }}
+                            />
+                        </div>
+                        {jmxFile && (
+                                <div className="jmx-file-item">
+                                    <span>{jmxFile.name}</span>
+                                    <button
+                                    type="button"
+                                    className="remove-button"
+                                    onClick={() => {
+                                        setJmxFile(null);
+                                        setValidationStatus(null);
+                                        document.getElementById('jmx-upload').value = ''; // Clear the file input
+                                    }}
+                                >
+                                    Remove
+                                </button>
+
+                                </div>
+                            )}
                         {jmxFile && (
                             <button
                                 type="button"
@@ -185,101 +195,196 @@ const FileUploadForm = () => {
                                 {isValidating ? 'Validating...' : validationStatus === true ? 'Validation Successful' : validationStatus === false ? 'Validation Unsuccessful' : 'Validate'}
                             </button>
                         )}
-                    </div>
-                    <div className="form-group">
-                        <label>CSV Files:</label>
-                        <input
-                            type="file"
-                            accept=".csv"
-                            multiple
-                            onChange={handleCsvFilesChange}
-                        />
+            
+                        <div className="upload-box" onClick={() => document.getElementById('csv-upload').click()}>
+                            <span>+</span>
+                            <p>Upload CSV(s)</p>
+                            <input
+                                id="csv-upload"
+                                type="file"
+                                accept=".csv"
+                                multiple
+                                onChange={handleCsvFilesChange}
+                                style={{ display: 'none' }}
+                            />
+                        </div>
                         <div className="csv-file-list">
-                            {csvFiles.length > 0 ? (
-                                <ul>
-                                    {csvFiles.map((file, index) => (
-                                        <li key={index}>
-                                            {file.name}
-                                            <button
-                                                type="button"
-                                                className="remove-button"
-                                                onClick={() => {
-                                                    setCsvFiles((prevFiles) =>
-                                                        prevFiles.filter((_, i) => i !== index)
-                                                    );
-                                                }}
-                                            >
-                                                Remove
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p>No CSV files added yet.</p>
-                            )}
+                            {csvFiles.map((file, index) => (
+                                <div key={index} className="csv-file-item">
+                                    <span>{file.name}</span>
+                                    <button
+                                        type="button"
+                                        className="remove-button"
+                                        onClick={() => {
+                                            setCsvFiles((prevFiles) =>
+                                                prevFiles.filter((_, i) => i !== index)
+                                            );
+                                        }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="load-configuration">
+                        <h2>Load Configuration</h2>
+                        <div className="form-group">
+                        <label>Total Users:</label>
+                        <div className="slider-input">
+                            <input
+                                type="range"
+                                min="0"
+                                max="1000"
+                                value={totalUsers}
+                                onChange={(e) => setTotalUsers(e.target.value)}
+                            />
+                            <input
+                                type="number"
+                                value={totalUsers}
+                                onChange={(e) => setTotalUsers(e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label>Total Users:</label>
-                        <input
-                            type="number"
-                            value={totalUsers}
-                            onChange={(e) => setTotalUsers(e.target.value)}
-                            ref={addEventListeners}
-                            required
-                        />
+                        <label>Duration (seconds)</label>
+                        <div className="slider-input">
+                            <input
+                                type="range"
+                                min="0"
+                                max="3600"
+                                value={duration}
+                                onChange={(e) => setDuration(e.target.value)}
+                                disabled={iterations !== ''}
+                            />
+                            <input
+                                type="number"
+                                value={duration}
+                                onChange={(e) => setDuration(e.target.value)}
+                                placeholder="Duration"
+                                disabled={iterations !== ''}
+                            />
+                        </div>
+                        <div className='form-group'>
+                        <label>Iterations</label>
+                        <div className="slider-input">
+                            <input
+                                type="range"
+                                min="0"
+                                max="1000"
+                                value={iterations}
+                                onChange={(e) => setIterations(e.target.value)}
+                                disabled={duration !== ''}
+                            />
+                            <input
+                                type="number"
+                                value={iterations}
+                                onChange={(e) => setIterations(e.target.value)}
+                                placeholder="Iterations"
+                                disabled={duration !== ''}
+                            />
+                        </div>
+                        </div>
                     </div>
+
                     <div className="form-group">
                         <label>Ramp Up Time (seconds):</label>
-                        <input
-                            type="number"
-                            value={rampUpTime}
-                            onChange={(e) => setRampUpTime(e.target.value)}
-                            ref={addEventListeners}
-                            required
-                        />
+                        <div className="slider-input">
+                            <input
+                                type="range"
+                                min="0"
+                                max="3600"
+                                value={rampUpTime}
+                                onChange={(e) => setRampUpTime(e.target.value)}
+                            />
+                            <input
+                                type="number"
+                                value={rampUpTime}
+                                onChange={(e) => setRampUpTime(e.target.value)}
+                            />
+                        </div>
                     </div>
+
                     <div className="form-group">
                         <label>Number of AWS Machines:</label>
-                        <input
-                            type="number"
-                            value={numAwsMachines}
-                            onChange={(e) => setNumAwsMachines(e.target.value)}
-                            ref={addEventListeners}
-                            required
-                        />
+                        <div className="slider-input">
+                            <input
+                                type="range"
+                                min="0"
+                                max="50"
+                                value={numAwsMachines}
+                                onChange={(e) => setNumAwsMachines(e.target.value)}
+                            />
+                            <input
+                                type="number"
+                                value={numAwsMachines}
+                                onChange={(e) => setNumAwsMachines(e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div className="form-group">
-                        <label>Duration (minutes):</label>
-                        <input
-                            type="number"
-                            value={duration}
-                            onChange={(e) => setDuration(e.target.value)}
-                            ref={addEventListeners}
-                            disabled={iterations !== ''}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Number of Iterations:</label>
-                        <input
-                            type="number"
-                            value={iterations}
-                            onChange={(e) => setIterations(e.target.value)}
-                            ref={addEventListeners}
-                            disabled={duration !== ''}
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="btn primary-btn"
-                        disabled={!validationStatus} // Disable submit button until validation is successful
-                    >
-                        Upload
+                     </div>       
+                    <div className="load-distribution">
+                <div className="distribution-header">
+                    <h2>Load Distribution</h2>
+                    <button type="button" className="add-location-button">
+                        + Add Location
                     </button>
-                </form>
-                {message && <p className="message">{message}</p>}
+                </div>
+                <table className="distribution-table">
+                    <thead>
+                        <tr>
+                            <th>Locations</th>
+                            <th>% of Traffic</th>
+                            <th># of Users</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select className="location-dropdown">
+                                    <option value="">Select Location</option>
+                                    <option value="US East (Virginia) - Google Cloud Platform">US East (Virginia) - Google Cloud Platform</option>
+                                    <option value="US West (Oregon) - Google Cloud Platform">US West (Oregon) - Google Cloud Platform</option>
+                                    <option value="Europe (London) - Google Cloud Platform">Europe (London) - Google Cloud Platform</option>
+                                    <option value="Asia Pacific (Mumbai) - Google Cloud Platform">Asia Pacific (Mumbai) - Google Cloud Platform</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" className="traffic-percentage" placeholder='100'/>
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    className="user-count"
+                                    value={userCount}
+                                    onChange={(e) => setUserCount(Number(e.target.value) || 0)}
+                                    placeholder=''
+                                />
+                            </td>
+                        </tr>
+                        <tr className="total-row">
+                            <td>Total:</td>
+                            <td>100%</td>
+                            <td>{userCount}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>       
+                    
+                </div>
             </div>
+
+            <button
+                type="submit"
+                className="upload-button"
+                onClick={handleSubmit}
+                disabled={!validationStatus}
+            >
+                Execute Test
+            </button>
+            {message && <p className="message">{message}</p>}
         </div>
     );
 };

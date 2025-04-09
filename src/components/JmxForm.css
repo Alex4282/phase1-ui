@@ -1,235 +1,420 @@
-/* Full-page gradient background with a soft blur effect */
 .file-upload-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    height: auto;
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    font-family: 'Roboto', sans-serif;
-    overflow-y: auto; /* Enable scrolling for the content */
-    position: relative; /* Ensure absolute positioning of buttons inside */
+    flex-direction: column;
     padding: 20px;
+    background-color: #f5f7fa;
+    min-height: calc(100vh - 60px); /* Adjust height to leave space for footer */
+    overflow-y: auto;
 }
 
-/* Stylish card with soft shadow and gradient border */
-.file-upload-card {
-    background: #ffffff;
-    padding: 40px 50px;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    width: 450px;
-    position: relative;
-    overflow: hidden;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    min-height: 500px; /* Ensuring full visibility */
+/* Ensure footer stays visible */
+body {
+    margin: 0;
+    padding: 0;
 }
 
-.file-upload-card:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-    margin: -2px; /* Same as border width */
-    border-radius: 15px;
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-}
-
-/* Elegant title styling */
-.file-upload-card h2 {
-    margin-bottom: 25px;
-    color: #2c3e50;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-/* Responsive form groups with modern spacing */
-.form-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #34495e;
-    font-weight: 600;
-}
-
-/* Input fields with stylish focus effects */
-.form-group input[type="text"],
-.form-group input[type="file"],
-.form-group input[type="number"] {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: box-shadow 0.3s, border-color 0.3s;
-}
-
-.form-group input:focus {
-    border-color: #2575fc;
-    box-shadow: 0 0 5px rgba(37, 117, 252, 0.4);
-    outline: none;
-}
-
-/* Buttons with gradient backgrounds and hover animations */
-.btn {
-    width: 100%;
-    padding: 12px 15px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.3s;
-}
-
-.primary-btn {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-}
-
-.primary-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(37, 117, 252, 0.5);
-}
-
-.secondary-btn {
-    background: linear-gradient(135deg, #f44336, #e57373);
-}
-
-.secondary-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(244, 67, 54, 0.5);
-}
-
-/* Stylish message area */
-.message {
-    margin-top: 20px;
-    font-size: 15px;
-    color: #16a085;
-    background: #e8f8f5;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid #16a085;
-}
-
-/* File input style with hover */
-.form-group input[type="file"] {
-    padding: 8px;
-    border: 1px solid #ddd;
-    cursor: pointer;
-}
-
-.form-group input[type="file"]::file-selector-button {
-    background: #6a11cb;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.form-group input[type="file"]::file-selector-button:hover {
-    background: #2575fc;
-}
-
-/* Adjust form card responsiveness for mobile */
-@media (max-width: 500px) {
-    .file-upload-card {
-        width: 90%;
-        padding: 30px;
-    }
-}
-
-/* Position buttons at the top-right corner */
 .top-buttons {
-    position: absolute;
-    top: 10px;
-    right: 10px;
     display: flex;
-    gap: 10px; /* Space between the buttons */
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* Button styles for Go to Dashboard and Logout */
-.dashboard-button,
-.logout-button {
-    background-color: #007bff;
-    color: white;
+.dashboard-button, .logout-button {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    z-index: 1000; /* Ensures it stays above other content */
 }
 
-.dashboard-button:hover {
-    background-color: #0056b3;
+.dashboard-button {
+    background-color: #4a90e2;
+    color: white;
 }
 
 .logout-button {
-    background-color: #f44336;
-}
-
-.logout-button:hover {
-    background-color: #d32f2f;
-}
-
-.remove-button {
-    margin-left: 10px;
-    padding: 2px 5px;
-    font-size: 0.9em;
-    background-color: #ff4d4f;
+    background-color: #dc3545;
     color: white;
-    border: none;
-    border-radius: 3px;
+}
+
+.layout {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+}
+
+.part1 {
+    width: 20%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.editable-field {
+    margin-bottom: 20px;
+}
+
+.editable-field label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.editable-field input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.part2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.file-upload-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #4a90e2;
+    border-radius: 8px;
+    padding: 20px;
     cursor: pointer;
+    margin-bottom: 20px;
 }
 
-.remove-button:hover {
-    background-color: #d9363e;
+.upload-box span {
+    font-size: 24px;
+    color: #4a90e2;
 }
 
-/* Prevent scrolling on number input fields */
-input[type="number"] {
-    -moz-appearance: textfield;
-}
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.upload-box p {
+    margin: 10px 0 0;
+    color: #333;
 }
 
 .validate-button {
-    margin-top: 10px;
     padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 14px;
+    background-color: #4a90e2;
+    color: white;
+    margin-bottom: 20px;
 }
 
 .validate-button.success {
-    background-color: #28a745; /* Green for success */
+    background-color: #28a745;
 }
 
 .validate-button.failure {
-    background-color: #dc3545; /* Red for failure */
+    background-color: #dc3545;
 }
 
-.validate-button:disabled {
-    background-color: #6c757d; /* Gray for disabled */
+.csv-file-list {
+    margin-top: 10px;
+}
+
+.csv-file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.remove-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.load-configuration {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.load-configuration h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.duration-iterations {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.duration-iterations span {
+    color: #666;
+}
+
+.upload-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #4a90e2;
+    color: white;
+    margin-top: 20px;
+}
+
+.message {
+    margin-top: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+.slider-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slider-input input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    background: #4a90e2;
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s;
+}
+
+.slider-input input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background-color: #4a90e2;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.slider-input input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.slider-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slider-input input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 1px;
+    padding:1px;
+    background: #4a90e2;
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s;
+    position: relative;
+}
+
+/* Fill the selected portion of the slider */
+.slider-input input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    background: linear-gradient(
+        to right,
+        #4a90e2 0%,
+        #4a90e2 calc(var(--percent, 0%) * 1%),
+        #e0e0e0 calc(var(--percent, 0%) * 1%),
+        #e0e0e0 100%
+    );
+    border-radius: 5px;
+}
+
+.slider-input input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background-color: #4a90e2;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Sync the percentage fill dynamically */
+.slider-input input[type="range"]::-moz-range-track {
+    background: #e0e0e0;
+}
+
+.slider-input input[type="range"]:focus {
+    outline: none;
+}
+
+/* Input box beside the slider */
+.slider-input input[type="number"] {
+    width: 70px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Handle the OR condition between Duration and Iterations */
+.form-group span {
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    color: #555;
+}
+
+/* Reduce the slider width */
+.slider-input input[type="range"] {
+    max-width: 250px;
+}
+
+/* Handle disabled state for sliders */
+input:disabled {
+    background-color: #f5f5f5;
     cursor: not-allowed;
+}
+
+/* Add these styles to your existing CSS file */
+
+.load-distribution {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.load-distribution h2 {
+    margin-bottom: 20px;
+    color: #333;
+    display: inline-block;
+}
+
+.distribution-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.add-location-button {
+    padding: 8px 15px;
+    background-color: #f5f5f5;
+    color: blue;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.add-location-button:hover {
+    background-color: #45a049;
+}
+
+.distribution-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.distribution-table th {
+    background-color: #f2f2f2;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+}
+
+.distribution-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.distribution-table tr:last-child td {
+    border-bottom: none;
+}
+
+.location-dropdown {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.traffic-percentage, .user-count {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: right;
+}
+
+.total-row {
+    font-weight: bold;
+    background-color: #f9f9f9;
+}
+
+.total-row td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .distribution-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .load-distribution {
+        padding: 15px;
+    }
 }

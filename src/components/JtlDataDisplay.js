@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"; // Import useRef
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -10,21 +10,21 @@ import { themeQuartz } from 'ag-grid-community';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const JtlDataDisplay = ({ loadTestId }) => {
+const JtlDataDisplay = ({ loadTestId, showRefreshButton = true }) => {
     const [rowData, setRowData] = useState([]);
     const [rowCount, setRowCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [autoRefresh, setAutoRefresh] = useState(true);
+    const [autoRefresh, setAutoRefresh] = useState(showRefreshButton ? true : false);// Initialize with showRefreshButton value
     const navigate = useNavigate();
-    const gridRef = useRef(); // Create a reference to the grid
+    const gridRef = useRef();
 
     const columnDefs = [
         { field: 'label', filter: true, sortable: true },
         { field: 'samples', filter: true, sortable: true },
         { field: 'fail', filter: true, sortable: true },
         { field: 'errorPct', headerName: 'Error %', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'average', headerName: 'Average Time ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
+        { field: 'average', headerName: 'Avg Time ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
         { field: 'min',  headerName: 'Min Time ms',filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
         { field: 'max', headerName: 'Max Time ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
         { field: 'median', headerName: 'Median Time ms',filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
@@ -57,10 +57,9 @@ const JtlDataDisplay = ({ loadTestId }) => {
                 setRowData(fetchedData);
                 setRowCount(fetchedData.length);
 
-                // Resize columns to fit content after data is loaded
                 if (gridRef.current && gridRef.current.api) {
-                    gridRef.current.api.sizeColumnsToFit(); // Fit columns to the grid width
-                    gridRef.current.api.autoSizeAllColumns(); // Auto-size columns based on content
+                    gridRef.current.api.sizeColumnsToFit();
+                    gridRef.current.api.autoSizeAllColumns();
                 }
             } catch (error) {
                 setError("Error fetching data. Please try again later.");
@@ -70,44 +69,23 @@ const JtlDataDisplay = ({ loadTestId }) => {
         };
 
         fetchData();
-        if (autoRefresh) {
+        if (autoRefresh && showRefreshButton) {
             const interval = setInterval(fetchData, 5000);
             return () => clearInterval(interval);
         }
-    }, [loadTestId, autoRefresh]);
-
-    const handleLogout = async () => {
-        try {
-            const response = await axiosInstance.post('/api/auth/logout', {}, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-                withCredentials: true,
-            });
-
-            if (response.status === 200) {
-                localStorage.removeItem('token');
-                navigate('/');
-            } else {
-                alert('Logout failed. Please try again.');
-            }
-        } catch (error) {
-            alert('An error occurred during logout.');
-        }
-    };
+    }, [loadTestId, autoRefresh,showRefreshButton]);
 
     return (
         <div className="jtl-container">
-            <div className="top-buttons">
-                <button className="dashboard-button" onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
-                <button className="logout-button" onClick={handleLogout}>Logout</button>
+            <h2>JTL Results (Load Test ID: {loadTestId})</h2>
+            
+            {/* Conditionally render refresh button based on showRefreshButton prop */}
+            {showRefreshButton && (
                 <button className="refresh-toggle" onClick={() => setAutoRefresh(!autoRefresh)}>
                     {autoRefresh ? "Disable Auto-Refresh" : "Enable Auto-Refresh"}
                 </button>
-            </div>
+            )}
             
-            <h2>JTL Results (Load Test ID: {loadTestId})</h2>
             {error && <p className="error-message">{error}</p>}
             {loading && <p className="loading-message">Loading data...</p>}
             {!loading && rowData.length === 0 && <p>No Data Found</p>}
@@ -115,14 +93,13 @@ const JtlDataDisplay = ({ loadTestId }) => {
             <p><strong>Total Rows:</strong> {rowCount}</p>
             <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
                 <AgGridReact
-                    ref={gridRef} // Attach the reference to the grid
+                    ref={gridRef}
                     rowData={rowData}
                     columnDefs={columnDefs}
                     pagination={true}
                     paginationPageSize={50}
                     theme={themeQuartz}
                     onGridReady={(params) => {
-                        // Optional: Auto-size columns when the grid is ready
                         params.api.sizeColumnsToFit();
                         params.api.autoSizeAllColumns();
                     }}
