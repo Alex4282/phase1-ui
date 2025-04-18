@@ -23,18 +23,19 @@ const JtlDataDisplay = ({ loadTestId, showRefreshButton = true }) => {
         { field: 'label', filter: true, sortable: true },
         { field: 'samples', filter: true, sortable: true },
         { field: 'fail', filter: true, sortable: true },
-        { field: 'errorPct', headerName: 'Error %', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'average', headerName: 'Avg Time ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'min',  headerName: 'Min Time ms',filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'max', headerName: 'Max Time ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'median', headerName: 'Median Time ms',filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'ninetyth', headerName: '90th pct ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'ninetyFifth', headerName: '95th pct ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'ninetyninth', headerName: '99th pct ms', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'transactionsPerSec', headerName: 'Transactions/s', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'receivedKB', headerName: 'Received KB', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' },
-        { field: 'sentKB', headerName: 'Sent KB', filter: true, sortable: true, valueFormatter: params => params.value !== undefined ? params.value.toFixed(2) : '' }
+        { field: 'errorPct', headerName: 'Error %', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'average', headerName: 'Avg Time ms', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'min', headerName: 'Min Time ms', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'max', headerName: 'Max Time ms', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'median', headerName: 'Median Time ms', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'ninetyth', headerName: '90th pct ms', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'ninetyFifth', headerName: '95th pct ms', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'ninetyninth', headerName: '99th pct ms', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'transactionsPerSec', headerName: 'Transactions/s', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'receivedKB', headerName: 'Received KB', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') },
+        { field: 'sentKB', headerName: 'Sent KB', filter: true, sortable: true, valueFormatter: params => (typeof params.value === "number" ? params.value.toFixed(2) : '') }
     ];
+    
 
     useEffect(() => {
         if (!loadTestId || isNaN(loadTestId)) {
