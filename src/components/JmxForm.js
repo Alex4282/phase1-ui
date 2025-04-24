@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axiosInstance from '../axiosInstance';
 import './JmxForm.css'; // Import the CSS file for styling
 
@@ -8,10 +8,11 @@ const FileUploadForm = () => {
     const [performanceTestName, setPerformanceTestName] = useState('performance_test_1');
     const [jmxFile, setJmxFile] = useState(null);
     const [csvFiles, setCsvFiles] = useState([]);
-    const [totalUsers, setTotalUsers] = useState('');
+    const [totalUsers, setTotalUsers] = useState(0);
     const [rampUpTime, setRampUpTime] = useState('');
     const [duration, setDuration] = useState('');
     const [iterations, setIterations] = useState('');
+    const [userPerMachine, setUserPerMachine] = useState(50); // Default to 50 users per machine
     const [numAwsMachines, setNumAwsMachines] = useState('');
     const [message, setMessage] = useState('');
     const [fileUploaded, setFileUploaded] = useState(false);
@@ -122,7 +123,22 @@ const FileUploadForm = () => {
             setIsValidating(false);
         }
     };
+    const handleuserPerMachineChange = (e) => {
+        const value = Math.max(1, e.target.value); // Ensure at least 1 user per machine
+        setUserPerMachine(value);
+    };
     const [userCount,setUserCount] = useState(0);
+
+    useEffect(() => {
+        if (totalUsers && userPerMachine) {
+            const calculatedMachines = Math.ceil(totalUsers / userPerMachine);
+            setNumAwsMachines(calculatedMachines);
+            console.log("Number of AWS Machines: ", calculatedMachines);
+        } else {
+            setNumAwsMachines(0);
+        }
+        
+    }, [totalUsers, userPerMachine]);
     return (
         <div className="file-upload-container">
             <div className="layout">
@@ -344,7 +360,7 @@ const FileUploadForm = () => {
                         <tr>
                             <td>
                                 <select className="location-dropdown">
-                                    <option value="">Select Location</option>
+                                    <option value="">Asia Pacific (Mumbai) - Google Cloud Platform</option>
                                     <option value="US East (Virginia) - Google Cloud Platform">US East (Virginia) - Google Cloud Platform</option>
                                     <option value="US West (Oregon) - Google Cloud Platform">US West (Oregon) - Google Cloud Platform</option>
                                     <option value="Europe (London) - Google Cloud Platform">Europe (London) - Google Cloud Platform</option>
@@ -358,7 +374,7 @@ const FileUploadForm = () => {
                                 <input
                                     type="number"
                                     className="user-count"
-                                    value={userCount}
+                                    value={totalUsers}
                                     onChange={(e) => setUserCount(Number(e.target.value) || 0)}
                                     placeholder=''
                                 />
@@ -367,7 +383,7 @@ const FileUploadForm = () => {
                         <tr className="total-row">
                             <td>Total:</td>
                             <td>100%</td>
-                            <td>{userCount}</td>
+                            <td>{totalUsers}</td>
                         </tr>
                     </tbody>
                 </table>

@@ -14,6 +14,11 @@ const SummaryTab = ({ loadTestId }) => {
         rampUpTime: 'N/A',
         duration: 'N/A'
     });
+    const [failureStats, setFailureStats] = useState({
+        totalPassed: 0,
+        totalFailed: 0,
+        failurePercentage: 0
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,12 +30,14 @@ const SummaryTab = ({ loadTestId }) => {
                     throw new Error('No load test ID provided');
                 }
 
-                const [timeTrendsRes, failedRes, testDetailsRes] = await Promise.all([
+                const [timeTrendsRes, failedRes, testDetailsRes,passedFailed] = await Promise.all([
                     axiosInstance.get(`/api/final-report-timeConsuming/${loadTestId}`)
                         .catch(() => ({ data: [] })),
                     axiosInstance.get(`/api/final-report-failed/${loadTestId}`)
                         .catch(() => ({ data: [] })),
                     axiosInstance.get(`/api/final-report-test-details/${loadTestId}`)
+                        .catch(() => ({ data: {} })),
+                        axiosInstance.get(`/api/final-report-pass-failed/${loadTestId}`)
                         .catch(() => ({ data: {} }))
                 ]);
 
@@ -50,12 +57,22 @@ const SummaryTab = ({ loadTestId }) => {
 
                 // Handle test details with defaults
                 setTestDetails({
-                    projectName: testDetailsRes.data?.projectName || 'N/A',
-                    numUsers: testDetailsRes.data?.numUsers || 'N/A',
-                    rampUpTime: testDetailsRes.data?.rampUpTime || 'N/A',
-                    duration: testDetailsRes.data?.duration || 'N/A'
+                    projectName: testDetailsRes.data?.projectName ?? 'N/A',
+                    numUsers: testDetailsRes.data?.numUsers ?? 'N/A',
+                    rampUpTime: testDetailsRes.data?.rampUpTime ?? 'N/A',
+                    duration: testDetailsRes.data?.duration ?? 'N/A'
                 });
-
+                const passedFailedData = Array.isArray(passedFailed?.data) ? passedFailed.data : [];
+                // Calculate total passed and failed transactions
+                const totalPassed = passedFailedData.reduce((sum, item) => sum + (item[2] || 0), 0);
+                const totalFailed = passedFailedData.reduce((sum, item) => sum + (item[3] || 0), 0);
+                const totalTransactions = totalPassed + totalFailed;
+                const failurePercentage = totalTransactions > 0 ? ((totalFailed / totalTransactions) * 100).toFixed(2) : 0;
+                setFailureStats({
+                    totalPassed,
+                    totalFailed,
+                    failurePercentage
+                });
             } catch (err) {
                 console.error("Error fetching summary data:", err);
                 setError(err.message || 'Failed to load summary data');
@@ -125,7 +142,21 @@ const SummaryTab = ({ loadTestId }) => {
             
             <div className="summary-card">
                 <p>The following is the summary of the test <strong>{testDetails.projectName}</strong> with a load of <strong>{testDetails.numUsers} users</strong> with <strong>{testDetails.rampUpTime} ramp-up Time</strong> seconds.</p>
-                <p>At a load of <strong>{testDetails.numUsers} users</strong>, the application was able to successfully complete <strong>{failedData.reduce((sum, item) => sum + (item.passTransactions || 0), 0)} transactions</strong> within a span of <strong>{testDetails.duration} seconds</strong>.</p>
+                <p>At a load of <strong>{testDetails.numUsers} users</strong>, the application was able to successfully complete <strong>{failureStats.totalPassed} transactions</strong> within a span of <strong>{testDetails.duration} seconds</strong>.</p>
+                
+                {/* Failure Summary Message */}
+                {failureStats.totalFailed === 0 ? (
+                    <p><strong>No failure was encountered for a load of {testDetails.numUsers} users.</strong></p>
+                ) : (
+                    <p><strong>Overall {failureStats.failurePercentage}% failures were observed.</strong></p>
+                )}
+                    {timeConsumingData.length > 0 && (
+                        <p>
+                            
+                                The slowest transaction was <strong>{timeConsumingData[0].name}</strong> that took an average of <strong>{timeConsumingData[0].avgResponseTime.toFixed(2)}</strong> seconds to respond.
+                            
+                        </p>
+                    )}
             </div>
 
             <div className="tables-container">

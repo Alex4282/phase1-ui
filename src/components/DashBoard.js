@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
-import './DashBoard.css'; // Import the CSS file for styling
+import './DashBoard.css';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    const [recentRuns, setRecentRuns] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchRecentRuns = async () => {
+            try {
+                const response = await axiosInstance.get('/api/recentRuns', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                setRecentRuns(response.data);
+            } catch (err) {
+                setError('Failed to fetch recent runs');
+                console.error('Error fetching recent runs:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRecentRuns();
+    }, []);
 
     const handleNewProject = () => {
         navigate('/jmxform');
@@ -21,15 +44,26 @@ const Dashboard = () => {
 
             {/* Cards Section */}
             <div className="cards-container">
-                {/* User Profile Card */}
+                {/* User Profile Card - Modified Recent Runs */}
                 <div className="card recent-runs">
                     <h2>Your Recent Runs</h2>
-                    <ul className="run-links">
-                        <li><Link to="/final-report/70">Run #245 - April 3, 2023</Link></li>
-                        <li><Link to="/final-report/69">Run #244 - April 2, 2023</Link></li>
-                        <li><Link to="/final-report/68">Run #243 - April 1, 2023</Link></li>
-                        <li><Link to="/final-report/67">Run #242 - March 31, 2023</Link></li>
-                    </ul>
+                    {loading ? (
+                        <p>Loading recent runs...</p>
+                    ) : error ? (
+                        <p className="error-message">{error}</p>
+                    ) : recentRuns.length === 0 ? (
+                        <p>No recent runs found</p>
+                    ) : (
+                        <ul className="run-links">
+                            {recentRuns.map((run) => (
+                                <li key={run.id}>
+                                    <Link to={`/final-report/${run.id}`}>
+                                        {run.projectName}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
 
                 {/* Active Projects Card */}
@@ -37,22 +71,22 @@ const Dashboard = () => {
                     <h2>Your Active Projects</h2>
                     <ul className="project-list">
                         <li className="project-item">
-                        <Link to="/project-dashboard" className="plain-link">
-                            <h3>Website Load Test</h3>
-                            <p>Status: In Progress</p>
-                        </Link>
+                            <Link to="/project-dashboard" className="plain-link">
+                                <h3>Website Load Test</h3>
+                                <p>Status: In Progress</p>
+                            </Link>
                         </li>
                         <li className="project-item">
-                        <Link to="/project-dashboard" className="plain-link">
-                            <h3>API Stress Test</h3>
-                            <p>Status: Completed</p>
-                        </Link>
+                            <Link to="/project-dashboard" className="plain-link">
+                                <h3>API Stress Test</h3>
+                                <p>Status: Completed</p>
+                            </Link>
                         </li>
                         <li className="project-item">
-                        <Link to="/project-dashboard" className="plain-link">
-                            <h3>Backend Performance Test</h3>
-                            <p>Status: In Progress</p>
-                        </Link>
+                            <Link to="/project-dashboard" className="plain-link">
+                                <h3>Backend Performance Test</h3>
+                                <p>Status: In Progress</p>
+                            </Link>
                         </li>
                     </ul>
                 </div>
