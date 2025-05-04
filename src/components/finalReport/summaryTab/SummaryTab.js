@@ -12,7 +12,9 @@ const SummaryTab = ({ loadTestId }) => {
         projectName: 'N/A',
         numUsers: 'N/A',
         rampUpTime: 'N/A',
-        duration: 'N/A'
+        duration: 'N/A',
+        numAwsMachine: 'N/A',
+        iterations: 'N/A'
     });
     const [failureStats, setFailureStats] = useState({
         totalPassed: 0,
@@ -60,7 +62,9 @@ const SummaryTab = ({ loadTestId }) => {
                     projectName: testDetailsRes.data?.projectName ?? 'N/A',
                     numUsers: testDetailsRes.data?.numUsers ?? 'N/A',
                     rampUpTime: testDetailsRes.data?.rampUpTime ?? 'N/A',
-                    duration: testDetailsRes.data?.duration ?? 'N/A'
+                    duration: testDetailsRes.data?.duration ?? 'N/A',
+                    numAwsMachine: testDetailsRes.data?.numAwsMachine ?? 'N/A',
+                    iterations: testDetailsRes.data?.iterations ?? 'N/A'
                 });
                 const passedFailedData = Array.isArray(passedFailed?.data) ? passedFailed.data : [];
                 // Calculate total passed and failed transactions
@@ -141,7 +145,17 @@ const SummaryTab = ({ loadTestId }) => {
             <h2>Executive Summary</h2>
             
             <div className="summary-card">
-                <p>The following is the summary of the test <strong>{testDetails.projectName}</strong> with a load of <strong>{testDetails.numUsers} users</strong> with <strong>{testDetails.rampUpTime} ramp-up Time</strong> seconds.</p>
+                <h3 className="summary-card-heading">Executive Summary for <strong>{testDetails.projectName}</strong></h3>
+                <p>A load of <strong>{testDetails.numUsers}</strong> users was generated using <strong>{testDetails.numAwsMachine}</strong> LG machines from AWS Mumbai Region</p>
+                <p>
+                The test ran for <strong>
+                    {testDetails.iterations != null && testDetails.iterations > 0
+                    ? `${testDetails.iterations} iterations` 
+                    : `${testDetails.duration} seconds`
+                    }
+                </strong> with a Ramp-up time of <strong>{testDetails.rampUpTime}</strong> Seconds
+                </p>
+                <h3 className="summary-card-heading">Below is the test result summary:</h3>
                 <p>At a load of <strong>{testDetails.numUsers} users</strong>, the application was able to successfully complete <strong>{failureStats.totalPassed} transactions</strong> within a span of <strong>{testDetails.duration} seconds</strong>.</p>
                 
                 {/* Failure Summary Message */}

@@ -91,7 +91,7 @@ const JtlDataDisplay = ({ loadTestId, showRefreshButton = true }) => {
 
         fetchData();
         if (autoRefresh && showRefreshButton) {
-            const interval = setInterval(fetchData, 5000);
+            const interval = setInterval(fetchData, 20000);
             return () => clearInterval(interval);
         }
     }, [loadTestId, autoRefresh, showRefreshButton, rowData]);
