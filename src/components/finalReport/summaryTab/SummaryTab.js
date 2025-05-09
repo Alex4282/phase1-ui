@@ -107,7 +107,8 @@ const SummaryTab = ({ loadTestId }) => {
         key: index,
         sno: index + 1,
         name: transaction?.[0] || 'Unknown Transaction',
-        avgResponseTime: transaction?.[1] ? Math.round((transaction[1] / 1000) * 100) / 100 : 0
+        avgResponseTime: transaction?.[1] ? Math.round((transaction[1] / 1000) * 100) / 100 : 0,
+        ninetythPercentile: transaction?.[2] ? Math.round((transaction[2] / 1000) * 100) / 100 : 0
     }));
 
     const failedData = (Array.isArray(failedTransactions) ? failedTransactions : []).map((transaction, index) => ({
@@ -126,6 +127,13 @@ const SummaryTab = ({ loadTestId }) => {
             title: 'Avg Response Time (s)', 
             dataIndex: 'avgResponseTime', 
             key: 'avgResponseTime', 
+            width: 200,
+            render: (value) => value.toFixed(2) // Format to 2 decimal places
+        },
+        { 
+            title: '90th Pct Response Time (s)', 
+            dataIndex: 'ninetythPercentile', 
+            key: 'ninetythPercentile', 
             width: 200,
             render: (value) => value.toFixed(2) // Format to 2 decimal places
         }
@@ -213,7 +221,7 @@ const SummaryTab = ({ loadTestId }) => {
                         dataSource={failedData.length > 0 ? failedData : [{ key: 0, sno: 1, name: 'No data available', totalTransactions: 0, passTransactions: 0, failedTransactions: 0 }]}
                         pagination={false}
                         size="middle"
-                        locale={{ emptyText: 'No failed transactions data available' }}
+                        locale={{ emptyText: 'All transactions passed successfully' }}
                     />
                 </div>
             </div>
