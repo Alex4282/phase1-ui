@@ -20,7 +20,7 @@ const FileUploadForm = () => {
     const [isValidating, setIsValidating] = useState(false); // To show loading state during validation
     const [remarks, setRemarks] = useState('');
     const navigate = useNavigate();
-
+    const numAwsMachinesLimit = 4; // Maximum number of AWS machines
     const handleCsvFilesChange = (e) => {
         const newFiles = Array.from(e.target.files);
         setCsvFiles((prevFiles) => [...prevFiles, ...newFiles]);
@@ -38,7 +38,11 @@ const FileUploadForm = () => {
             setMessage('Please upload a JMX file');
             return;
         }
-
+        if(numAwsMachines>numAwsMachinesLimit)
+        {
+                setMessage(`Number of AWS Machines cannot exceed ${numAwsMachinesLimit}.`); 
+                return;
+        }
         const formData = new FormData();
         formData.append('projectName', projectName);
         formData.append('performanceTestName', performanceTestName);
@@ -247,7 +251,7 @@ const FileUploadForm = () => {
                     <div className="load-configuration">
                         <h2>Load Configuration</h2>
                         <div className="form-group">
-                        <label>Total Users:</label>
+                        <label>Users per Machine:</label>
                         <div className="slider-input">
                             <input
                                 type="range"
@@ -324,23 +328,33 @@ const FileUploadForm = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>Number of AWS Machines:</label>
-                        <div className="slider-input">
-                            <input
-                                type="range"
-                                min="0"
-                                max="50"
-                                value={numAwsMachines}
-                                onChange={(e) => setNumAwsMachines(e.target.value)}
-                            />
-                            <input
-                                type="number"
-                                value={numAwsMachines}
-                                onChange={(e) => setNumAwsMachines(e.target.value)}
-                            />
+                    <label>Number of AWS Machines:</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <div className="slider-input">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="4"
+                                    value={numAwsMachines}
+                                    onChange={(e) => setNumAwsMachines(Math.min(numAwsMachinesLimit, e.target.value))}
+                                />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="4"
+                                    value={numAwsMachines}
+                                    onChange={(e) => {
+                                        const value = Math.min(numAwsMachinesLimit, Math.max(0, Number(e.target.value)));
+                                        setNumAwsMachines(isNaN(value) ? 0 : value);
+                                    }}
+                                />
+                            </div>
+                            <span className="total-users-display">
+                                Total Users: {totalUsers * numAwsMachines || 0}
+                            </span>
                         </div>
-                    </div>
-                     </div>       
+                    </div>    
+                    </div>   
                     <div className="load-distribution">
                 <div className="distribution-header">
                     <h2>Load Distribution</h2>

@@ -418,3 +418,10 @@ input:disabled {
         padding: 15px;
     }
 }
+
+.total-users-display {
+    font-size: 0.9em;
+    color: #444;
+    white-space: nowrap;
+    margin-left: 10px;
+}

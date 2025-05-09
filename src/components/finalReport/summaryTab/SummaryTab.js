@@ -7,6 +7,10 @@ const SummaryTab = ({ loadTestId }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [timeConsumingTransactions, setTimeConsumingTransactions] = useState([]);
+    const [testTimings, setTestTimings] = useState({
+        startTime: null,
+        endTime: null
+    });
     const [failedTransactions, setFailedTransactions] = useState([]);
     const [testDetails, setTestDetails] = useState({
         projectName: 'N/A',
@@ -14,7 +18,8 @@ const SummaryTab = ({ loadTestId }) => {
         rampUpTime: 'N/A',
         duration: 'N/A',
         numAwsMachine: 'N/A',
-        iterations: 'N/A'
+        iterations: 'N/A',
+        id: 'N/A'
     });
     const [failureStats, setFailureStats] = useState({
         totalPassed: 0,
@@ -32,7 +37,7 @@ const SummaryTab = ({ loadTestId }) => {
                     throw new Error('No load test ID provided');
                 }
 
-                const [timeTrendsRes, failedRes, testDetailsRes,passedFailed] = await Promise.all([
+                const [timeTrendsRes, failedRes, testDetailsRes,passedFailed,testHeadingRes] = await Promise.all([
                     axiosInstance.get(`/api/final-report-timeConsuming/${loadTestId}`)
                         .catch(() => ({ data: [] })),
                     axiosInstance.get(`/api/final-report-failed/${loadTestId}`)
@@ -40,9 +45,16 @@ const SummaryTab = ({ loadTestId }) => {
                     axiosInstance.get(`/api/final-report-test-details/${loadTestId}`)
                         .catch(() => ({ data: {} })),
                         axiosInstance.get(`/api/final-report-pass-failed/${loadTestId}`)
-                        .catch(() => ({ data: {} }))
+                        .catch(() => ({ data: {} })),
+                        axiosInstance.get(`/api/final-report-test-heading/${loadTestId}`)
                 ]);
-
+                if (testHeadingRes?.data && testHeadingRes.data.length > 0) {
+                    const headingData = testHeadingRes.data[0]; // Assuming first item contains the timings
+                    setTestTimings({
+                        startTime: headingData[0] ? new Date(headingData[0]).toLocaleString() : 'N/A',
+                        endTime: headingData[1] ? new Date(headingData[1]).toLocaleString() : 'N/A'
+                    });
+                }
                 // Handle time consuming transactions
                 const rawTimeTrends = Array.isArray(timeTrendsRes?.data) ? timeTrendsRes.data : [];
                 setTimeConsumingTransactions(rawTimeTrends.slice(0, 5));
@@ -56,7 +68,7 @@ const SummaryTab = ({ loadTestId }) => {
                     rawFailedData = failedRes.data.transactions || failedRes.data.results || [];
                 }
                 setFailedTransactions(rawFailedData);
-
+                
                 // Handle test details with defaults
                 setTestDetails({
                     projectName: testDetailsRes.data?.projectName ?? 'N/A',
@@ -145,8 +157,15 @@ const SummaryTab = ({ loadTestId }) => {
             <h2>Executive Summary</h2>
             
             <div className="summary-card">
-                <h3 className="summary-card-heading">Executive Summary for <strong>{testDetails.projectName}</strong></h3>
-                <p>A load of <strong>{testDetails.numUsers}</strong> users was generated using <strong>{testDetails.numAwsMachine}</strong> LG machines from AWS Mumbai Region</p>
+            <h3 className="summary-card-heading">
+                    Executive Summary for <strong>{testDetails.projectName}</strong>
+                    {testTimings.startTime && testTimings.endTime && (
+                        <span className="test-timings">
+                            (Start: {testTimings.startTime}, End: {testTimings.endTime})
+                        </span>
+                    )}
+                </h3>
+                <p>A load of <strong>{testDetails.numUsers*testDetails.numAwsMachine}</strong> users was generated using <strong>{testDetails.numAwsMachine}</strong> LG machines from AWS Mumbai Region</p>
                 <p>
                 The test ran for <strong>
                     {testDetails.iterations != null && testDetails.iterations > 0
@@ -156,11 +175,11 @@ const SummaryTab = ({ loadTestId }) => {
                 </strong> with a Ramp-up time of <strong>{testDetails.rampUpTime}</strong> Seconds
                 </p>
                 <h3 className="summary-card-heading">Below is the test result summary:</h3>
-                <p>At a load of <strong>{testDetails.numUsers} users</strong>, the application was able to successfully complete <strong>{failureStats.totalPassed} transactions</strong> within a span of <strong>{testDetails.duration} seconds</strong>.</p>
+                <p>At a load of <strong>{testDetails.numUsers*testDetails.numAwsMachine} users</strong>, the application was able to successfully complete <strong>{failureStats.totalPassed} transactions</strong> within a span of <strong>{testDetails.duration} seconds</strong>.</p>
                 
                 {/* Failure Summary Message */}
                 {failureStats.totalFailed === 0 ? (
-                    <p><strong>No failure was encountered for a load of {testDetails.numUsers} users.</strong></p>
+                    <p><strong>No failure was encountered for a load of {testDetails.numUsers*testDetails.numAwsMachine} users.</strong></p>
                 ) : (
                     <p><strong>Overall {failureStats.failurePercentage}% failures were observed.</strong></p>
                 )}
